@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .db
 .flake8
+airtime_transactions.db
 # C extensions
 *.so
 
