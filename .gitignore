@@ -5,6 +5,7 @@ __pycache__/
 .db
 .flake8
 airtime_transactions.db
+.DS_Store
 # C extensions
 *.so
 
