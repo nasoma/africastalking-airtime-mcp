@@ -33,7 +33,7 @@ init_database()
 username = os.getenv("username")
 api_key = os.getenv("api_key")
 currency_code = os.getenv("currency_code")
-user_country = os.getenv("country", "kenya").lower()
+user_country = os.getenv("country").lower()
 
 
 COUNTRY_CODES = {
