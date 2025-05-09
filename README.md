@@ -1,18 +1,17 @@
 # Africa's Talking Airtime MCP
 
-This project implements a **Model Context Protocol (MCP) server** for managing airtime transactions using the **Africa's Talking API**. It provides a set of tools to check account balance, send airtime, view recent top-up transactions, sum the amounts of recent top-ups, and count top-ups for a specific phone number. The application uses SQLite to store transaction data and supports African countries supported by AfricasTalking Airtime Service with proper phone number formatting.
+This project implements a **Model Context Protocol (MCP) server** for managing airtime transactions using the **Africa's Talking API**. It provides a set of tools to check account balance, send airtime, view recent top-up transactions, sum the amounts of recent top-ups, and count top-ups for a specific phone number. The application uses SQLite to store transaction data and supports African countries supported by Africa's Talking Airtime Service with proper phone number formatting.
 
 ## Description
 
-The **Africa's Talking Airtime MCP** integrates with the Africa's Talking Airtime API to facilitate airtime transfers and account management. Key features include:
+The **Africa's Talking Airtime MCP Server** integrates with the Africa's Talking Airtime API to facilitate airtime transfers. Key features include:
 
-- Formatting phone numbers based on the user's country.
 - Sending airtime to specified phone numbers.
 - Storing transaction details in a SQLite database.
 - Retrieving and summarizing transaction history.
 - Checking the account balance on Africa's Talking.
 
-The application supports the countries where AfricasTalking Airtime service is supported.
+The application supports the countries where Africa's Talking Airtime service is supported.
 
 ## Installation
 
@@ -23,7 +22,7 @@ The application supports the countries where AfricasTalking Airtime service is s
 2. [Install uv](https://docs.astral.sh/uv/#highlights)
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 Follow these steps to set up and run the project locally:
 
@@ -37,6 +36,7 @@ cd africastalking-airtime-mcp
 ```bash
 uv sync 
 ```
+3. You are good to go!
 
 ## Using with AI Tools
 
@@ -66,15 +66,16 @@ Add this to your `claude_desktop_config.json`:
 ```
 ### With Goose
 
-[Goose](https://block.github.io/goose/) is a good option if you want to use your preferred LLM and supply an API key
+[Goose](https://block.github.io/goose/) is a good option if you want to use your preferred LLM and supply an API key.
 
 
 - Install Goosee.
 - Open the settings panel and add a custom extension (MCP Server).
 - Give your extension a name. Type is STDIO.
-- Add the command.
+- Add the command. Save changes.
 ![Goose Demo](goose-demo1.png)
-- Add your environmant variables: `username`, `api_key`, `currency_code` and `country`
+- Add your environment variables: `username`, `api_key`, `currency_code` and `country`.
+- Save chnages.
 
 ![Goose Demo2](goose-demo2.png)
 
