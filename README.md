@@ -2,6 +2,10 @@
 
 This project implements a **Model Context Protocol (MCP) server** for managing airtime transactions using the **Africa's Talking API**. It provides a set of tools to check account balance, send airtime, view recent top-up transactions, sum the amounts of recent top-ups, and count top-ups for a specific phone number. The application uses SQLite to store transaction data and supports African countries supported by Africa's Talking Airtime Service with proper phone number formatting.
 
+<a href="https://glama.ai/mcp/servers/@nasoma/africastalking-airtime-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@nasoma/africastalking-airtime-mcp/badge" alt="Africa's Talking Airtime MCP server" />
+</a>
+
 ## Description
 
 The **Africa's Talking Airtime MCP Server** integrates with the Africa's Talking Airtime API to facilitate airtime transfers. Key features include:
@@ -68,17 +72,15 @@ Add this to your `claude_desktop_config.json`:
 
 [Goose](https://block.github.io/goose/) is a good option if you want to use your preferred LLM and supply an API key.
 
-
-- Install Goosee.
+- Install Goose.
 - Open the settings panel and add a custom extension (MCP Server).
 - Give your extension a name. Type is STDIO.
 - Add the command. Save changes.
 ![Goose Demo](goose-demo1.png)
 - Add your environment variables: `username`, `api_key`, `currency_code` and `country`.
-- Save chnages.
+- Save changes.
 
 ![Goose Demo2](goose-demo2.png)
-
 
 ## Tools Descriptions
 
@@ -155,7 +157,6 @@ The following are example questions or commands users can ask the AI to interact
 - Phone numbers are automatically formatted based on the `country` variable set in the client or on `claude_desktop_config.json`.
 - The SQLite database (`airtime_transactions.db`) is created in the project directory upon initialization.
 - Works best with models that support tool calling, e.g `Claude 3.7 Sonnet`. If you are price conscious `GPT-4.1 Nano` is a good, cheaper option when used with clients like Goose.
-
 
 ## 🙏 Credits
 
