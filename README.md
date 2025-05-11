@@ -2,6 +2,10 @@
 
 This project implements a **Model Context Protocol (MCP) server** for managing airtime transactions using the **Africa's Talking API**. It provides a set of tools to check account balance, send airtime, view recent top-up transactions, sum the amounts of recent top-ups, and count top-ups for a specific phone number. The application uses SQLite to store transaction data and supports African countries supported by Africa's Talking Airtime Service with proper phone number formatting.
 
+<a href="https://glama.ai/mcp/servers/@nasoma/africastalking-airtime-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@nasoma/africastalking-airtime-mcp/badge" />
+</a>
+
 ## Description
 
 The **Africa's Talking Airtime MCP Server** integrates with the Africa's Talking Airtime API to facilitate airtime transfers. Key features include:
