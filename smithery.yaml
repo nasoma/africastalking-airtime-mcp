@@ -1,0 +1,34 @@
+# Smithery configuration file: https://smithery.ai/docs/build/project-config
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - username
+      - apiKey
+      - currencyCode
+    properties:
+      username:
+        type: string
+        description: Africa's Talking username
+      apiKey:
+        type: string
+        description: Africa's Talking API key
+      currencyCode:
+        type: string
+        description: Currency code for transactions, e.g., KES, NGN
+      country:
+        type: string
+        default: kenya
+        description: Country for phone number formatting
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'python', args: ['main.py'], env: { username: config.username, api_key: config.apiKey, currency_code: config.currencyCode, country: config.country } })
+  exampleConfig:
+    username: demoUser
+    apiKey: YOUR_AT_API_KEY
+    currencyCode: KES
+    country: kenya

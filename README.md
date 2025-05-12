@@ -1,4 +1,5 @@
 # Africa's Talking Airtime MCP
+[![smithery badge](https://smithery.ai/badge/@nasoma/africastalking-airtime-mcp)](https://smithery.ai/server/@nasoma/africastalking-airtime-mcp)
 
 This project implements a **Model Context Protocol (MCP) server** for managing airtime transactions using the **Africa's Talking API**. It provides a set of tools to check account balance, send airtime, view recent top-up transactions, sum the amounts of recent top-ups, and count top-ups for a specific phone number. The application uses SQLite to store transaction data and supports African countries supported by Africa's Talking Airtime Service with proper phone number formatting.
 
@@ -17,6 +18,14 @@ The **Africa's Talking Airtime MCP Server** integrates with the Africa's Talking
 The application supports the countries where Africa's Talking Airtime service is supported.
 
 ## Installation
+
+### Installing via Smithery
+
+To install Africa's Talking Airtime Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@nasoma/africastalking-airtime-mcp):
+
+```bash
+npx -y @smithery/cli install @nasoma/africastalking-airtime-mcp --client claude
+```
 
 ### Prerequisites
 
