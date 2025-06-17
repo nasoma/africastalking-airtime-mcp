@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/nasoma-africastalking-airtime-mcp-badge.png)](https://mseep.ai/app/nasoma-africastalking-airtime-mcp)
+
 # Africa's Talking Airtime MCP
 [![smithery badge](https://smithery.ai/badge/@nasoma/africastalking-airtime-mcp)](https://smithery.ai/server/@nasoma/africastalking-airtime-mcp)
 
