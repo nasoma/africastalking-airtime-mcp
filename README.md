@@ -6,6 +6,8 @@ This project implements a **Model Context Protocol (MCP) server** for managing a
 <a href="https://glama.ai/mcp/servers/@nasoma/africastalking-airtime-mcp">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@nasoma/africastalking-airtime-mcp/badge" />
 
+  [![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/f5bd5826-abe0-421e-ac2b-6a5daeaa384a)
+
 ## Description
 
 The **Africa's Talking Airtime MCP Server** integrates with the Africa's Talking Airtime API to facilitate airtime transfers. Key features include:
