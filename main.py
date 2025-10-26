@@ -11,7 +11,12 @@ DB_PATH = Path(__file__).parent / "airtime_transactions.db"
 
 
 def init_database():
-    """Initialize the SQLite database and create transactions table if it doesn't exist."""
+    """Initializes the database and creates the transactions table.
+
+    This function connects to the SQLite database file defined by DB_PATH.
+    If the 'transactions' table does not already exist, it is created with
+    columns for storing transaction details.
+    """
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -61,20 +66,20 @@ airtime = africastalking.Airtime
 
 
 def format_phone_number(phone_number):
-    """
-    Format the phone number to include the country code based on the user's country.
-    If the number starts with '0', replace it with the country's code.
-    If it starts with '+', assume it's already formatted.
-    If no valid country is set, raise an error.
+    """Formats a phone number to include the international country code.
+
+    This function takes a phone number as a string and formats it based on
+    the user's country, which is determined by the `user_country` global
+    variable. It handles numbers that start with '0', '+', or a digit.
 
     Args:
-        phone_number (str): The phone number to format.
+        phone_number (str): The phone number to be formatted.
 
     Returns:
-        str: The formatted phone number with the country code.
+        str: The phone number with the country code prepended.
 
     Raises:
-        ValueError: If the country is not set or invalid.
+        ValueError: If the `user_country` is not in the `COUNTRY_CODES` map.
     """
     phone_number = str(phone_number).strip()
 
@@ -94,7 +99,13 @@ def format_phone_number(phone_number):
 
 
 def save_transaction(phone_number, amount, currency_code):
-    """Save a transaction to the database."""
+    """Saves a single airtime transaction to the SQLite database.
+
+    Args:
+        phone_number (str): The recipient's phone number.
+        amount (float): The amount of airtime sent.
+        currency_code (str): The currency of the transaction (e.g., "KES").
+    """
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -109,7 +120,15 @@ def save_transaction(phone_number, amount, currency_code):
 
 @mcp.tool()
 async def check_balance() -> str:
-    """Check the airtime balance for your Africa's Talking account."""
+    """Checks the airtime balance of the Africa's Talking account.
+
+    This tool connects to the Africa's Talking API to fetch the user's
+    current application data, which includes the account balance.
+
+    Returns:
+        str: A message displaying the account balance or an error if the
+             balance cannot be retrieved.
+    """
     try:
         response = africastalking.Application.fetch_application_data()
         if "UserData" in response and "balance" in response["UserData"]:
@@ -123,16 +142,19 @@ async def check_balance() -> str:
 
 @mcp.tool()
 async def load_airtime(phone_number: str, amount: float, currency_code: str) -> str:
-    """
-    Load airtime to a specified telephone number and save the transaction.
+    """Sends airtime to a specified phone number and logs the transaction.
+
+    This tool formats the phone number, sends the airtime using the
+    Africa's Talking API, and saves a record of the transaction in the
+    database.
 
     Args:
-        phone_number: The phone number to send airtime to
-        amount: The amount of airtime to send
-        currency_code: The currency code
+        phone_number (str): The recipient's phone number.
+        amount (float): The amount of airtime to send.
+        currency_code (str): The currency for the transaction (e.g., "KES").
 
     Returns:
-        A message indicating success or failure
+        str: A message indicating the status of the airtime transaction.
     """
     try:
         formatted_number = format_phone_number(phone_number)
@@ -151,7 +173,16 @@ async def load_airtime(phone_number: str, amount: float, currency_code: str) -> 
 
 @mcp.tool()
 async def get_last_topups(limit: int = 3) -> str:
-    """Get the last N top-up transactions"""
+    """Retrieves the last N top-up transactions from the database.
+
+    Args:
+        limit (int, optional): The number of recent transactions to fetch.
+                               Defaults to 3.
+
+    Returns:
+        str: A formatted string listing the last N transactions or a message
+             if no transactions are found.
+    """
     try:
         with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
@@ -185,7 +216,19 @@ async def get_last_topups(limit: int = 3) -> str:
 
 @mcp.tool()
 async def sum_last_n_topups(n: int = 3) -> str:
-    """Calculate the sum of the last n successful top-ups, defaulting to 3."""
+    """Calculates the sum of the last 'n' successful top-ups.
+
+    This tool retrieves the last 'n' transactions from the database and
+    calculates their total sum. It ensures that all transactions are in the
+    same currency before summing.
+
+    Args:
+        n (int, optional): The number of recent top-ups to sum. Defaults to 3.
+
+    Returns:
+        str: The total sum of the last 'n' top-ups or an error message if
+             the currencies are mixed or no transactions are found.
+    """
     if n <= 0:
         return "Please provide the number of top-ups whose total you need."
 
@@ -219,7 +262,14 @@ async def sum_last_n_topups(n: int = 3) -> str:
 
 @mcp.tool()
 async def count_topups_by_number(phone_number: str) -> str:
-    """Count the number of successful top-ups to a specific phone number."""
+    """Counts the number of top-ups for a specific phone number.
+
+    Args:
+        phone_number (str): The phone number to count transactions for.
+
+    Returns:
+        str: The total count of top-ups for the given number or an error message.
+    """
     try:
         formatted_number = format_phone_number(phone_number)
         with sqlite3.connect(DB_PATH) as conn:
