@@ -2,7 +2,7 @@ import os
 import africastalking
 from mcp.server.fastmcp import FastMCP
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 mcp = FastMCP("AfricasTalking Airtime MCP")
@@ -35,10 +35,20 @@ def init_database():
 
 init_database()
 
-username = os.getenv("username")
-api_key = os.getenv("api_key")
-currency_code = os.getenv("currency_code")
-user_country = os.getenv("country").lower()
+
+def _require_env(name: str) -> str:
+    """Reads a required environment variable, raising a clear error if missing."""
+    value = os.getenv(name)
+    if not value:
+        raise EnvironmentError(
+            f"Required environment variable '{name}' is not set or is empty."
+        )
+    return value
+
+
+username = _require_env("username")
+api_key = _require_env("api_key")
+user_country = _require_env("country").lower()
 
 
 COUNTRY_CODES = {
@@ -65,7 +75,7 @@ africastalking.initialize(username, api_key)
 airtime = africastalking.Airtime
 
 
-def format_phone_number(phone_number):
+def format_phone_number(phone_number: str) -> str:
     """Formats a phone number to include the international country code.
 
     This function takes a phone number as a string and formats it based on
@@ -83,6 +93,9 @@ def format_phone_number(phone_number):
     """
     phone_number = str(phone_number).strip()
 
+    if not phone_number:
+        raise ValueError("Phone number must not be empty.")
+
     if user_country not in COUNTRY_CODES:
         raise ValueError(
             f"Invalid or unset country: {user_country}. Supported countries: {list(COUNTRY_CODES.keys())}"
@@ -98,7 +111,7 @@ def format_phone_number(phone_number):
         return country_code + phone_number
 
 
-def save_transaction(phone_number, amount, currency_code):
+def save_transaction(phone_number: str, amount: float, currency_code: str) -> None:
     """Saves a single airtime transaction to the SQLite database.
 
     Args:
@@ -113,9 +126,28 @@ def save_transaction(phone_number, amount, currency_code):
             INSERT INTO transactions (phone_number, amount, currency_code, transaction_time)
             VALUES (?, ?, ?, ?)
             """,
-            (phone_number, amount, currency_code, datetime.now()),
+            (phone_number, amount, currency_code, datetime.now(timezone.utc)),
         )
         conn.commit()
+
+
+def _parse_transaction_time(raw: str) -> str:
+    """Parses a transaction timestamp string into a human-readable format.
+
+    Handles both microsecond and non-microsecond variants stored by SQLite.
+
+    Args:
+        raw (str): The raw timestamp string from the database.
+
+    Returns:
+        str: A formatted timestamp string (YYYY-MM-DD HH:MM:SS).
+    """
+    for fmt in ("%Y-%m-%d %H:%M:%S.%f%z", "%Y-%m-%d %H:%M:%S%z", "%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M:%S"):
+        try:
+            return datetime.strptime(raw, fmt).strftime("%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            continue
+    return raw
 
 
 @mcp.tool()
@@ -150,12 +182,18 @@ async def load_airtime(phone_number: str, amount: float, currency_code: str) -> 
 
     Args:
         phone_number (str): The recipient's phone number.
-        amount (float): The amount of airtime to send.
+        amount (float): The amount of airtime to send. Must be greater than zero.
         currency_code (str): The currency for the transaction (e.g., "KES").
 
     Returns:
         str: A message indicating the status of the airtime transaction.
     """
+    if amount <= 0:
+        return "Amount must be greater than zero."
+
+    if not currency_code or not currency_code.strip():
+        return "Currency code must not be empty."
+
     try:
         formatted_number = format_phone_number(phone_number)
         airtime.send(
@@ -177,12 +215,15 @@ async def get_last_topups(limit: int = 3) -> str:
 
     Args:
         limit (int, optional): The number of recent transactions to fetch.
-                               Defaults to 3.
+                               Defaults to 3. Must be at least 1.
 
     Returns:
         str: A formatted string listing the last N transactions or a message
              if no transactions are found.
     """
+    if limit < 1:
+        return "Limit must be at least 1."
+
     try:
         with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
@@ -200,14 +241,9 @@ async def get_last_topups(limit: int = 3) -> str:
         if not rows:
             return "No top-up transactions found."
 
-        result = f"Last {limit} top-up transactions:\n"
+        result = f"Last {len(rows)} top-up transaction(s):\n"
         for row in rows:
-            try:
-                transaction_time = datetime.strptime(
-                    row[3], "%Y-%m-%d %H:%M:%S.%f"
-                ).strftime("%Y-%m-%d %H:%M:%S")
-            except ValueError:
-                transaction_time = row[3]
+            transaction_time = _parse_transaction_time(row[3])
             result += f"- {transaction_time}: {row[2]} {row[1]:.2f} to {row[0]}\n"
         return result
     except Exception as e:
@@ -224,13 +260,14 @@ async def sum_last_n_topups(n: int = 3) -> str:
 
     Args:
         n (int, optional): The number of recent top-ups to sum. Defaults to 3.
+                           Must be at least 1.
 
     Returns:
         str: The total sum of the last 'n' top-ups or an error message if
              the currencies are mixed or no transactions are found.
     """
     if n <= 0:
-        return "Please provide the number of top-ups whose total you need."
+        return "n must be at least 1."
 
     try:
         with sqlite3.connect(DB_PATH) as conn:
@@ -255,7 +292,7 @@ async def sum_last_n_topups(n: int = 3) -> str:
 
         total = sum(amount for (amount, _) in rows)
         currency = rows[0][1]
-        return f"Sum of last {n} successful top-ups:\n- {currency} {total:.2f}"
+        return f"Sum of last {len(rows)} successful top-up(s):\n- {currency} {total:.2f}"
     except Exception as e:
         return f"Error calculating sum: {str(e)}"
 
